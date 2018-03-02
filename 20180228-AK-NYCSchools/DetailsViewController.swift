@@ -12,7 +12,7 @@ import MapKit
 class DetailsViewController: UIViewController {
 
   // School ID in the Sacrata Dataset
-  var school: School?
+  var school: School!
   private var satScores: [SATScores]?
   
   let contentView: UIScrollView = {
@@ -91,11 +91,11 @@ class DetailsViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    navigationItem.title = school?.school_name
+    navigationItem.title = school.school_name
     view.backgroundColor = .white
     layoutViews()
     
-    if let latString = school?.latitude, let longString = school?.longitude,
+    if let latString = school.latitude, let longString = school.longitude,
       let latitude = Double(latString), let longitude = Double(longString){
       let centerLocation = CLLocationCoordinate2DMake(latitude, longitude)
       let mapSpan = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
@@ -114,12 +114,6 @@ class DetailsViewController: UIViewController {
   
   // MARK: OTHER
   private func requestSATScores(completionHandler: @escaping () -> Void) {
-    
-    guard let school = self.school else {
-      /// TODO
-      print("Boro is required in order to proceed")
-      return
-    }
     
     let client = SODAClient(domain: "data.cityofnewyork.us", token: "pMWYN2xWjHGuTWK18ZmHUq3Tj")
     
@@ -153,10 +147,6 @@ class DetailsViewController: UIViewController {
   }
   
   private func populateViews() {
-    guard let school = school else {
-      print("Error: now School ID passed to the View Controller")
-      return
-    }
     overviewLabel.text = "OVERVIEW:\n\(school.overview_paragraph)"
     addressLabel.text = "ADDRESS:\n\(school.primary_address_line_1)\n\(school.city) \(school.state_code) \(school.zip)\nPhone Number: \(school.phone_number)\nWebsite: \(school.website ?? "N/A")"
     

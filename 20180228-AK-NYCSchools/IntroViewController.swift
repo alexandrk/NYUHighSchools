@@ -112,7 +112,6 @@ class IntroViewController: UIViewController {
     let vc = SchoolsViewController()
     vc.boro = sender?.title(for: .disabled)
     navigationItem.backBarButtonItem = UIBarButtonItem(title: "Boroughs", style: .plain, target: nil, action: nil)
-    navigationItem.backBarButtonItem?.tintColor = .black
     navigationController?.pushViewController(vc, animated: true)
   }
   

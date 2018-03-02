@@ -20,6 +20,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window?.makeKeyAndVisible()
     window?.rootViewController = UINavigationController(rootViewController: IntroViewController())
     
+    UISearchBar.appearance().tintColor = .black
+    UINavigationBar.appearance().tintColor = .black
+    
     return true
   }
 

@@ -53,7 +53,6 @@ class SchoolsTableViewCell: UITableViewCell {
   private func layoutViews() {
     addSubview(schoolName)
     addSubview(addressLabel1)
-    addSubview(addressLabel2)
     
     NSLayoutConstraint.activate([
       schoolName.leftAnchor.constraint(equalTo: leftAnchor, constant: 8),
@@ -63,12 +62,7 @@ class SchoolsTableViewCell: UITableViewCell {
       
       addressLabel1.leftAnchor.constraint(equalTo: leftAnchor, constant: 8),
       addressLabel1.widthAnchor.constraint(equalTo: widthAnchor),
-      addressLabel1.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8),
-//
-//
-//      addressLabel2.leftAnchor.constraint(equalTo: addressLabel1.rightAnchor),
-//      addressLabel2.topAnchor.constraint(equalTo: addressLabel1.topAnchor),
-//      addressLabel2.widthAnchor.constraint(equalTo: addressLabel1.widthAnchor),
+      addressLabel1.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8)
     ])
   }
 }
