@@ -58,9 +58,7 @@ class SchoolsViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     if let schools = schools {
       cell.schoolName.text = schools[indexPath.row].school_name
-      //cell.boroughLabel.text = schools[indexPath.row].borough
-      cell.addressLabel1.text = schools[indexPath.row].primary_address_line_1
-      cell.addressLabel2.text = "\(schools[indexPath.row].city) \(schools[indexPath.row].state_code) \(schools[indexPath.row].zip)"
+      cell.addressLabel1.text = "\(schools[indexPath.row].primary_address_line_1), \(schools[indexPath.row].city) \(schools[indexPath.row].state_code) \(schools[indexPath.row].zip)"
     }
     
     return cell
@@ -119,10 +117,7 @@ class SchoolsViewController: UIViewController, UITableViewDelegate, UITableViewD
   private func titleFromBoro(boro: String?) -> String {
     var title = "NYU Schools"
     
-    guard let boro = boro else {
-      return title
-    }
-    
+    guard let boro = boro else { return title }
     switch boro {
     case "Q":
       title = "Queens"
