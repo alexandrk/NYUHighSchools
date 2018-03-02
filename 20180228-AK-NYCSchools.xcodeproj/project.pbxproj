@@ -18,6 +18,7 @@
 		11964DCD2048B76E0003EE15 /* IntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11964DCC2048B76E0003EE15 /* IntroViewController.swift */; };
 		11964DCF20491D5D0003EE15 /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11964DCE20491D5D0003EE15 /* DetailsViewController.swift */; };
 		11964DD2204932970003EE15 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11964DD1204932970003EE15 /* MapKit.framework */; };
+		11964DD4204A022A0003EE15 /* SearchFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11964DD3204A022A0003EE15 /* SearchFooter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		11964DCC2048B76E0003EE15 /* IntroViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroViewController.swift; sourceTree = "<group>"; };
 		11964DCE20491D5D0003EE15 /* DetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
 		11964DD1204932970003EE15 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		11964DD3204A022A0003EE15 /* SearchFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchFooter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +78,7 @@
 				11964DC82047992B0003EE15 /* SchoolsTableViewCell.swift */,
 				11964DCA2047B34A0003EE15 /* School.swift */,
 				11964DC0204787120003EE15 /* SODAClient.swift */,
+				11964DD3204A022A0003EE15 /* SearchFooter.swift */,
 				11964DB5204786BE0003EE15 /* Assets.xcassets */,
 				11964DB7204786BE0003EE15 /* LaunchScreen.storyboard */,
 				11964DBA204786BE0003EE15 /* Info.plist */,
@@ -170,6 +173,7 @@
 			files = (
 				11964DB1204786BE0003EE15 /* SchoolsViewController.swift in Sources */,
 				11964DCB2047B34A0003EE15 /* School.swift in Sources */,
+				11964DD4204A022A0003EE15 /* SearchFooter.swift in Sources */,
 				11964DC92047992B0003EE15 /* SchoolsTableViewCell.swift in Sources */,
 				11964DCD2048B76E0003EE15 /* IntroViewController.swift in Sources */,
 				11964DCF20491D5D0003EE15 /* DetailsViewController.swift in Sources */,
