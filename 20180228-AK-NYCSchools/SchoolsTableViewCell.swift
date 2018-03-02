@@ -69,7 +69,7 @@ class SchoolsTableViewCell: UITableViewCell {
       schoolName.leftAnchor.constraint(equalTo: leftAnchor, constant: 8),
       schoolName.topAnchor.constraint(equalTo: topAnchor, constant: 5),
       schoolName.widthAnchor.constraint(equalTo: widthAnchor, constant: -16),
-      schoolName.bottomAnchor.constraint(equalTo: boroughLabel.topAnchor, constant: -8),
+      schoolName.bottomAnchor.constraint(equalTo: addressLabel1.topAnchor, constant: -8),
       
       boroughLabel.leftAnchor.constraint(equalTo: schoolName.leftAnchor),
       boroughLabel.bottomAnchor.constraint(equalTo: addressLabel1.bottomAnchor),

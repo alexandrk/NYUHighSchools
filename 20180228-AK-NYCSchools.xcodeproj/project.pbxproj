@@ -15,6 +15,7 @@
 		11964DC1204787120003EE15 /* SODAClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11964DC0204787120003EE15 /* SODAClient.swift */; };
 		11964DC92047992B0003EE15 /* SchoolsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11964DC82047992B0003EE15 /* SchoolsTableViewCell.swift */; };
 		11964DCB2047B34A0003EE15 /* School.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11964DCA2047B34A0003EE15 /* School.swift */; };
+		11964DCD2048B76E0003EE15 /* IntroViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11964DCC2048B76E0003EE15 /* IntroViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		11964DC0204787120003EE15 /* SODAClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SODAClient.swift; sourceTree = "<group>"; };
 		11964DC82047992B0003EE15 /* SchoolsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolsTableViewCell.swift; sourceTree = "<group>"; };
 		11964DCA2047B34A0003EE15 /* School.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = School.swift; sourceTree = "<group>"; };
+		11964DCC2048B76E0003EE15 /* IntroViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +64,7 @@
 			isa = PBXGroup;
 			children = (
 				11964DAE204786BE0003EE15 /* AppDelegate.swift */,
+				11964DCC2048B76E0003EE15 /* IntroViewController.swift */,
 				11964DB0204786BE0003EE15 /* SchoolsViewController.swift */,
 				11964DC82047992B0003EE15 /* SchoolsTableViewCell.swift */,
 				11964DCA2047B34A0003EE15 /* School.swift */,
@@ -148,6 +151,7 @@
 				11964DB1204786BE0003EE15 /* SchoolsViewController.swift in Sources */,
 				11964DCB2047B34A0003EE15 /* School.swift in Sources */,
 				11964DC92047992B0003EE15 /* SchoolsTableViewCell.swift in Sources */,
+				11964DCD2048B76E0003EE15 /* IntroViewController.swift in Sources */,
 				11964DC1204787120003EE15 /* SODAClient.swift in Sources */,
 				11964DAF204786BE0003EE15 /* AppDelegate.swift in Sources */,
 			);

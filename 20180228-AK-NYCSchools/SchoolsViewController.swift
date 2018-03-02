@@ -12,6 +12,7 @@ class SchoolsViewController: UIViewController, UITableViewDelegate, UITableViewD
   
   // Data Array
   private var schools: [School]?
+  public var boro: String?
   
   // Using UITableView as a View instead of using the UITableViewController, since UITableViewController
   // doesn't implement safeLayoutGuides (used for development for iPhone X)
@@ -28,7 +29,7 @@ class SchoolsViewController: UIViewController, UITableViewDelegate, UITableViewD
     view.backgroundColor = .white
     layoutViews()
     
-    navigationItem.title = "NYU Schools"
+    navigationItem.title = titleFromBoro(boro: boro)
     
     tableView.delegate = self
     tableView.dataSource = self
@@ -37,8 +38,7 @@ class SchoolsViewController: UIViewController, UITableViewDelegate, UITableViewD
     tableView.rowHeight = UITableViewAutomaticDimension
     tableView.estimatedRowHeight = 100
     
-    let client = SODAClient(domain: "data.cityofnewyork.us", token: "pMWYN2xWjHGuTWK18ZmHUq3Tj")
-    requestSchools(client)
+    requestSchools()
     
   }
   
@@ -58,7 +58,7 @@ class SchoolsViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     if let schools = schools {
       cell.schoolName.text = schools[indexPath.row].school_name
-      cell.boroughLabel.text = schools[indexPath.row].borough
+      //cell.boroughLabel.text = schools[indexPath.row].borough
       cell.addressLabel1.text = schools[indexPath.row].primary_address_line_1
       cell.addressLabel2.text = "\(schools[indexPath.row].city) \(schools[indexPath.row].state_code) \(schools[indexPath.row].zip)"
     }
@@ -67,7 +67,16 @@ class SchoolsViewController: UIViewController, UITableViewDelegate, UITableViewD
   }
   
   // MARK: OTHER
-  private func requestSchools(_ client: SODAClient) {
+  private func requestSchools() {
+    
+    guard let boro = self.boro else {
+      /// TODO
+      print("Boro is required in order to proceed")
+      return
+    }
+    
+    let client = SODAClient(domain: "data.cityofnewyork.us", token: "pMWYN2xWjHGuTWK18ZmHUq3Tj")
+    
     // Default Socrata parameters to query the most recent version of the API back end
     let parameters: [String:String] = [
       "$$version": "2.1",
@@ -76,7 +85,7 @@ class SchoolsViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     let schoolList = client.query(dataset: "s3k6-pzi2", defaultParameters: parameters)
     
-    schoolList.filter("lower(borough) like '%queens%'").limit(100).get { res in
+    schoolList.filter("boro like '%\(boro)%'").get { res in
       switch res {
       case .dataset (let data):
         
@@ -105,6 +114,30 @@ class SchoolsViewController: UIViewController, UITableViewDelegate, UITableViewD
       tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
       tableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
     ])
+  }
+  
+  private func titleFromBoro(boro: String?) -> String {
+    var title = "NYU Schools"
+    
+    guard let boro = boro else {
+      return title
+    }
+    
+    switch boro {
+    case "Q":
+      title = "Queens"
+    case "M":
+      title = "Manhattan"
+    case "X":
+      title = "Bronx"
+    case "K":
+      title = "Brooklyn"
+    case "R":
+      title = "Staten Island"
+    default:
+      title = ""
+    }
+    return title
   }
   
 }
