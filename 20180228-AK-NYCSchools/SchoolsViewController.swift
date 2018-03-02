@@ -114,6 +114,14 @@ class SchoolsViewController: UIViewController, UITableViewDelegate, UITableViewD
     ])
   }
   
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let vc = DetailsViewController()
+    vc.school = schools![indexPath.row]
+    navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
+    navigationItem.backBarButtonItem?.tintColor = .black
+    navigationController?.pushViewController(vc, animated: true)
+  }
+  
   private func titleFromBoro(boro: String?) -> String {
     var title = "NYU Schools"
     

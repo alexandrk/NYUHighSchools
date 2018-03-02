@@ -20,6 +20,7 @@ struct School: Decodable {
   let state_code: String
   let zip: String
   let phone_number: String
+  let website: String?
   let latitude: String?
   let longitude: String?
   
@@ -29,4 +30,15 @@ struct School: Decodable {
   let graduation_rate: String?
   let college_career_rate: String?
   let total_students: String
+}
+
+struct SATScores: Decodable {
+  let dbn: String
+  let school_name: String
+  
+  let num_of_sat_test_takers: String?
+  let sat_critical_reading_avg_score: String?
+  let sat_math_avg_score: String?
+  let sat_writing_avg_score: String?
+  
 }
