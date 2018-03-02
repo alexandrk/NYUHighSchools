@@ -13,15 +13,15 @@ struct School: Decodable {
   let school_name: String
   let overview_paragraph: String
   
-  let borough: String
+  let borough: String?
   let neighborhood: String
   let primary_address_line_1: String
   let city: String
   let state_code: String
   let zip: String
   let phone_number: String
-  let latitude: String
-  let longitude: String
+  let latitude: String?
+  let longitude: String?
   
   let subway: String
   let language_classes: String?
