@@ -11,6 +11,8 @@ import MapKit
 
 class DetailsTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+  static let cellIdentifier = "genericCell"
+  
   var school: School!
   private var satScores: [SATScores]?
   
@@ -23,70 +25,55 @@ class DetailsTableViewController: UIViewController, UITableViewDelegate, UITable
     return view
   }()
   
+  // MARK: - Lifecycle Methods
   override func viewDidLoad() {
     super.viewDidLoad()
-
     view.backgroundColor = .white
+    layoutViews()
     
     navigationItem.title = "School Details"
     navigationController?.navigationBar.isTranslucent = false
     
-    // Setup TableView
+    // TableView Setup
     tableView.delegate = self
     tableView.dataSource = self
     tableView.separatorInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 0)
-    tableView.register(GenericCell.self, forCellReuseIdentifier: GenericCell.cellID)
-    tableView.register(MapViewCell.self, forCellReuseIdentifier: MapViewCell.cellID)
+    tableView.register(UITableViewCell.self, forCellReuseIdentifier: DetailsTableViewController.cellIdentifier)
+    tableView.register(MapViewCell.self, forCellReuseIdentifier: MapViewCell.cellIdentifier)
     tableView.rowHeight = UITableViewAutomaticDimension
     tableView.estimatedRowHeight = 50
     
-    layoutViews()
-    
-    requestSATScores() {
-      self.tableView.reloadRows(at: [IndexPath(row: 0, section: 3),
-                                IndexPath(row: 1, section: 3),
-                                IndexPath(row: 2, section: 3),
-                                IndexPath(row: 3, section: 3)], with: UITableViewRowAnimation.automatic)
-    }
-  }
-
-  private func requestSATScores(completionHandler: @escaping () -> Void) {
-    let client = SODAClient(domain: "data.cityofnewyork.us", token: "pMWYN2xWjHGuTWK18ZmHUq3Tj")
-    
-    // Default Socrata parameters to query the most recent version of the API back end
-    let parameters: [String:String] = [
-      "$$version": "2.1",
-      "$$read_from_nbe": "true"
-    ]
-    
-    let schoolList = client.query(dataset: "f9bf-2cp4", defaultParameters: parameters)
-    
-    schoolList.filter("dbn='\(school.dbn)'").get { res in
-      switch res {
-      case .dataset (let data):
-        
-        do {
-          self.satScores = try JSONDecoder().decode([SATScores].self, from: data)
-          completionHandler()
-        } catch {
-          print(error)
+    // Request Schools Data from API
+    Networking.requestSATScores(schoolID: school.dbn) { (result, error) in
+      if let result = result, result.count > 0 {
+        self.satScores = result
+        DispatchQueue.main.async {
+          self.tableView.reloadSections(IndexSet(integer: 3), with: .automatic)
         }
-        
-      case .error (let error):
-        
-        print("Failure")
-        print(error)
-        
+      } else if let error = error {
+        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
+        DispatchQueue.main.async {
+          self.present(alert, animated: true, completion: nil)
+        }
+      } else {
+        let errorMessage = "No SAT Score data available"
+        let alert = UIAlertController(title: "Sorry", message: errorMessage, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
+        DispatchQueue.main.async {
+          self.present(alert, animated: true, completion: nil)
+        }
       }
     }
   }
-  
+
   // MARK: - Table view data source
 
   func numberOfSections(in tableView: UITableView) -> Int {
     return 5
   }
 
+  // titleForHeaderInSection
   func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
     var returnValue:String!
     
@@ -102,6 +89,7 @@ class DetailsTableViewController: UIViewController, UITableViewDelegate, UITable
     return returnValue
   }
   
+  // numberOfRowsInSection
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     var returnValue: Int!
     
@@ -116,9 +104,9 @@ class DetailsTableViewController: UIViewController, UITableViewDelegate, UITable
     return returnValue
   }
 
-
-func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    var cell = UITableViewCell(style: .subtitle, reuseIdentifier: GenericCell.cellID)
+  // cellForRowAt
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    var cell = UITableViewCell(style: .subtitle, reuseIdentifier: DetailsTableViewController.cellIdentifier)
   
     // Default cell settings
     cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
@@ -126,91 +114,144 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
     cell.textLabel?.numberOfLines = 0
     cell.detailTextLabel?.numberOfLines = 0
   
+    // Switching on the section index to populate the static cells correctly
     switch indexPath.section {
-      case 0: // Name
+      case 0: // Name Section
         cell.textLabel?.font = UIFont.systemFont(ofSize: 20)
         cell.textLabel?.textAlignment = .center
         cell.textLabel?.text = school.school_name
       
-      case 1: // Overview
+      case 1: // Overview Section
         cell.textLabel?.textAlignment = .justified
         cell.textLabel?.text = school.overview_paragraph
       
-      case 2: // Location
-        switch indexPath.row {
-          case 0: // Map
-            let mapCell = MapViewCell(style: .default, reuseIdentifier: MapViewCell.cellID)
-            
-            if let latString = school.latitude, let longString = school.longitude,
-              let latitude = Double(latString), let longitude = Double(longString){
-                let centerLocation = CLLocationCoordinate2DMake(latitude, longitude)
-                let mapSpan = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                let mapRegion = MKCoordinateRegion(center: centerLocation, span: mapSpan)
-                let mapPin = MKPointAnnotation()
-              
-                mapPin.coordinate = centerLocation
-                mapCell.mapView.addAnnotation(mapPin)
-                mapCell.mapView.setRegion(mapRegion, animated: true)
-              
-                cell = mapCell
-            } else {
-              cell.heightAnchor.constraint(equalToConstant: 0)
-            }
-          case 1: // Address
-            cell.textLabel?.text = school.primary_address_line_1
-            cell.detailTextLabel?.text = "\(school.city) \(school.state_code) \(school.zip)"
-          case 2: // Phone
-            cell.textLabel?.text = "Phone Number:"
-            cell.detailTextLabel?.text = "\(school.phone_number)"
-          case 3: // Website
-            cell.textLabel?.text = "Website:"
-            cell.detailTextLabel?.text = "\(school.website ?? "N/A")"
-          default: fatalError("Unknown row in cellForRowAt for section \(indexPath.section)")
-        }
-      case 3: // SAT
-        var numberOfTakers = "N/A"
-        var criticalReading = "N/A"
-        var math = "N/A"
-        var writing = "N/A"
-        if let satScores = satScores, satScores.count > 0 {
-          numberOfTakers = satScores[0].num_of_sat_test_takers ?? "N/A"
-          criticalReading = satScores[0].sat_critical_reading_avg_score ?? "N/A"
-          math = satScores[0].sat_math_avg_score ?? "N/A"
-          writing = satScores[0].sat_writing_avg_score ?? "N/A"
-        }
-        switch indexPath.row {
-        case 0: cell.textLabel?.text = "Number of Takers: \(numberOfTakers)"
-        case 1: cell.textLabel?.text = "Critical Reading Avg. Score: \(criticalReading)"
-        case 2: cell.textLabel?.text = "Math Avg. Score: \(math)"
-        case 3: cell.textLabel?.text = "Writing Avg. Score : \(writing)"
-        default: fatalError("Unknown row in cellForRowAt for section \(indexPath.section)")
-        }
-      case 4: // Stats
-        var value = "N/A"
-        switch indexPath.row {
-        case 0: // Number of students
-          cell.textLabel?.text = "Number of Students: \(school.total_students)"
-        case 1:
-          if let rate = school.attendance_rate, !rate.isEmpty, let numericRate = Double(rate) {
-            value = String(format: "%1.2f", numericRate)
-          }
-          cell.textLabel?.text = "Attendence Rate: \(value)"
-        case 2:
-          if let rate = school.graduation_rate, !rate.isEmpty, let numericRate = Double(rate) {
-            value = String(format: "%.3f", numericRate)
-          }
-          cell.textLabel?.text = "Graduation Rate: \(value)"
-        case 3:
-          if let rate = school.college_career_rate, !rate.isEmpty, let numericRate = Double(rate) {
-            value = String(format: "%.3f", numericRate)
-          }
-          cell.textLabel?.text = "College Career Rate: \(value)"
-        default: fatalError("Unknown row in cellForRowAt for section \(indexPath.section)")
-        }
-      default:
-        print("finish implementing all sections")
+      case 2: // Location Section
+        cell = renderLocationSectionRows(indexPath)
+      case 3: // SAT Section
+        cell = renderSATScoresRows(indexPath)
+      case 4: // Stats Section
+        cell = renderSTATSRows(indexPath)
+      default: fatalError("cellForRowAt() Please check the number of sections in the table")
     }
 
+    return cell
+  }
+  
+  // MARK: - Private instance methods
+  
+  /**
+   Renders rows for LOcation section
+   */
+  private func renderLocationSectionRows(_ indexPath: IndexPath) -> UITableViewCell {
+    var cell = UITableViewCell(style: .subtitle, reuseIdentifier: DetailsTableViewController.cellIdentifier)
+    
+    // Default cell settings
+    cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
+    cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 12)
+    cell.textLabel?.numberOfLines = 0
+    cell.detailTextLabel?.numberOfLines = 0
+  
+    switch indexPath.row {
+      case 0: // Map Cell
+        let mapCell = MapViewCell(style: .default, reuseIdentifier: MapViewCell.cellIdentifier)
+      
+        if let latString = school.latitude, let longString = school.longitude,
+          let latitude = Double(latString), let longitude = Double(longString){
+          let centerLocation = CLLocationCoordinate2DMake(latitude, longitude)
+          let mapSpan = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+          let mapRegion = MKCoordinateRegion(center: centerLocation, span: mapSpan)
+          let mapPin = MKPointAnnotation()
+        
+          mapPin.coordinate = centerLocation
+          mapCell.mapView.addAnnotation(mapPin)
+          mapCell.mapView.setRegion(mapRegion, animated: true)
+        
+          cell = mapCell
+        } else {
+          cell.textLabel?.text = "No School coordinates provided. Cannot render the map view."
+        }
+      case 1: // Address Cell
+        cell.textLabel?.text = school.primary_address_line_1
+        cell.detailTextLabel?.text = "\(school.city) \(school.state_code) \(school.zip)"
+      case 2: // Phone Cell
+        cell.textLabel?.text = "Phone Number:"
+        cell.detailTextLabel?.text = "\(school.phone_number)"
+      case 3: // Website Cell
+        cell.textLabel?.text = "Website:"
+        cell.detailTextLabel?.text = "\(school.website ?? "N/A")"
+      default: fatalError("Unknown row in cellForRowAt for section \(indexPath.section)")
+      }
+      return cell
+    }
+  
+  /**
+   Renders rows for SAT Scores section
+   */
+  private func renderSATScoresRows(_ indexPath: IndexPath) -> UITableViewCell {
+    let cell = UITableViewCell(style: .subtitle, reuseIdentifier: DetailsTableViewController.cellIdentifier)
+    
+    // Default cell settings
+    cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
+    cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 12)
+    cell.textLabel?.numberOfLines = 0
+    cell.detailTextLabel?.numberOfLines = 0
+    
+    guard let satScores = satScores, satScores.count > 0 else {
+      if indexPath.row == 0 {
+        cell.textLabel?.text = "Sorry: No SAT Score data available."
+      }
+      return cell
+    }
+    
+    // Default values for empty fields
+    let numberOfTakers = satScores[0].num_of_sat_test_takers ?? "N/A"
+    let criticalReading = satScores[0].sat_critical_reading_avg_score ?? "N/A"
+    let math = satScores[0].sat_math_avg_score ?? "N/A"
+    let writing = satScores[0].sat_writing_avg_score ?? "N/A"
+    
+    switch indexPath.row {
+      case 0: cell.textLabel?.text = "Number of Takers: \(numberOfTakers)"
+      case 1: cell.textLabel?.text = "Critical Reading Avg. Score: \(criticalReading)"
+      case 2: cell.textLabel?.text = "Math Avg. Score: \(math)"
+      case 3: cell.textLabel?.text = "Writing Avg. Score : \(writing)"
+      default: fatalError("Unknown row in cellForRowAt for section \(indexPath.section)")
+    }
+    return cell
+  }
+  
+  /**
+   Renders rows for STATS section
+  */
+  private func renderSTATSRows(_ indexPath: IndexPath) -> UITableViewCell {
+    var value = "N/A"
+    let cell = UITableViewCell(style: .subtitle, reuseIdentifier: DetailsTableViewController.cellIdentifier)
+    
+    // Default cell settings
+    cell.textLabel?.font = UIFont.systemFont(ofSize: 15)
+    cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 12)
+    cell.textLabel?.numberOfLines = 0
+    cell.detailTextLabel?.numberOfLines = 0
+    
+    switch indexPath.row {
+      case 0: // Number of students Cell
+        cell.textLabel?.text = "Number of Students: \(school.total_students)"
+      case 1: // Attendance Rate Cell
+        if let rate = school.attendance_rate, !rate.isEmpty, let numericRate = Double(rate) {
+          value = String(format: "%1.2f", numericRate)
+        }
+        cell.textLabel?.text = "Attendence Rate: \(value)"
+      case 2: // Graduation Rate Cell
+        if let rate = school.graduation_rate, !rate.isEmpty, let numericRate = Double(rate) {
+          value = String(format: "%.3f", numericRate)
+        }
+        cell.textLabel?.text = "Graduation Rate: \(value)"
+      case 3: // College Career Cell
+        if let rate = school.college_career_rate, !rate.isEmpty, let numericRate = Double(rate) {
+          value = String(format: "%.3f", numericRate)
+        }
+        cell.textLabel?.text = "College Career Rate: \(value)"
+      default: fatalError("Unknown row in cellForRowAt for section \(indexPath.section)")
+    }
     return cell
   }
   
@@ -225,36 +266,5 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
     ])
   }
 
-}
-
-class GenericCell: UITableViewCell {
-  static let cellID = "genericCell"
-}
-
-class MapViewCell: UITableViewCell {
-  static let cellID = "mapViewCell"
-  
-  let mapView: MKMapView = {
-    let view = MKMapView()
-    view.translatesAutoresizingMaskIntoConstraints = false
-    return view
-  }()
-  
-  override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-    super.init(style: style, reuseIdentifier: reuseIdentifier)
-    
-    addSubview(mapView)
-    NSLayoutConstraint.activate([
-      mapView.centerXAnchor.constraint(equalTo: centerXAnchor),
-      mapView.centerYAnchor.constraint(equalTo: centerYAnchor),
-      mapView.widthAnchor.constraint(equalTo: widthAnchor),
-      mapView.heightAnchor.constraint(equalToConstant: 250),
-      mapView.bottomAnchor.constraint(equalTo: bottomAnchor)
-    ])
-  }
-  
-  required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
 }
 

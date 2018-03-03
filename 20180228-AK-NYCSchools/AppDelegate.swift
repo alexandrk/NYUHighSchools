@@ -18,10 +18,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Override point for customization after application launch.
     window = UIWindow(frame: UIScreen.main.bounds)
     window?.makeKeyAndVisible()
-    window?.rootViewController = UINavigationController(rootViewController: IntroViewController())
+    
+    let navigationController = UINavigationController(rootViewController: IntroViewController())
+    window?.rootViewController = navigationController
     
     UISearchBar.appearance().tintColor = .black
     UINavigationBar.appearance().tintColor = .black
+    navigationController.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 25)]
     
     return true
   }

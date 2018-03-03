@@ -42,18 +42,6 @@ public class SODAClient {
     self.token = token
   }
   
-  /// Gets a row using its identifier. See http://dev.socrata.com/docs/row-identifiers.html
-//  public func get(row: String, inDataset: String, _ completionHandler: @escaping SODARowCompletionHandler) {
-//    get(dataset: "\(inDataset)/\(row)", withParameters: [:]) { res in
-//      switch res {
-//      case .dataset (let rows):
-//        completionHandler(.row (rows[0]))
-//      case .error(let err):
-//        completionHandler(.error (err))
-//      }
-//    }
-//  }
-  
   /// Asynchronously gets a dataset using a simple filter query. See http://dev.socrata.com/docs/filtering.html
   public func get(dataset: String, withFilters: [String: String], limit: Int = 0, offset: Int = 0, _ completionHandler: @escaping SODADatasetCompletionHandler) {
     var ps = withFilters
@@ -70,8 +58,6 @@ public class SODAClient {
     
     let url = "https://\(self.domain)\(path).json?\(query)"
     let urlToSend = URL(string: url)
-    
-    print(url)
     
     // Build the request
     let request = NSMutableURLRequest(url: urlToSend!)
@@ -209,18 +195,4 @@ public class SODAQuery
   public func get(_ completionHandler: @escaping (SODADatasetResult) -> Void) {
     client.get(dataset: dataset, withParameters: parameters, completionHandler)
   }
-  
-  /// Performs the query asynchronously and sends the results, one row at a time, to an iterator function.
-//  public func each(_ iterator: @escaping (SODARowResult) -> Void) {
-//    client.get(dataset: dataset, withParameters: parameters) { res in
-//      switch res {
-//      case .dataset (let data):
-//        for row in data {
-//          iterator(.row (row))
-//        }
-//      case .error (let err):
-//        iterator(.error (err))
-//      }
-//    }
-//  }
 }

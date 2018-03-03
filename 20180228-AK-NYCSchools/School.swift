@@ -24,9 +24,9 @@ struct School: Decodable {
   let latitude: String?
   let longitude: String?
   
-  let subway: String
+  let subway: String?
   let language_classes: String?
-  let attendance_rate: String
+  let attendance_rate: String?
   let graduation_rate: String?
   let college_career_rate: String?
   let total_students: String
