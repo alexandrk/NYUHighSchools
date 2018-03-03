@@ -154,7 +154,7 @@ class SchoolsViewController: UIViewController, UITableViewDelegate, UITableViewD
   }
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let vc = DetailsViewController()
+    let vc = DetailsTableViewController()
     let school: School
     
     if isFiltering() {
